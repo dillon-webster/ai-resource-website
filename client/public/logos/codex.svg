@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#3B6FE8"/>
+    </linearGradient>
+  </defs>
+  <!-- Codex hexagon icon -->
+  <polygon points="100,16 172,58 172,142 100,184 28,142 28,58" fill="url(#cg)" opacity="0.9"/>
+  <polygon points="100,38 152,68 152,132 100,162 48,132 48,68" fill="none" stroke="white" stroke-width="3" opacity="0.4"/>
+  <!-- Code slash symbol -->
+  <text x="100" y="118" text-anchor="middle" font-family="monospace" font-size="52" font-weight="900" fill="white" opacity="0.95">&lt;/&gt;</text>
+</svg>

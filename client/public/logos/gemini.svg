@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4285F4"/>
+      <stop offset="40%" stop-color="#9B72CB"/>
+      <stop offset="100%" stop-color="#D96570"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4285F4"/>
+      <stop offset="40%" stop-color="#9B72CB"/>
+      <stop offset="100%" stop-color="#D96570"/>
+    </linearGradient>
+  </defs>
+  <!-- Gemini 4-pointed star / sparkle -->
+  <path d="M100 10 C100 10 106 70 130 100 C106 130 100 190 100 190 C100 190 94 130 70 100 C94 70 100 10 100 10Z" fill="url(#g1)"/>
+  <path d="M10 100 C10 100 70 94 100 70 C130 94 190 100 190 100 C190 100 130 106 100 130 C70 106 10 100 10 100Z" fill="url(#g2)"/>
+</svg>
