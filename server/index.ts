@@ -2,7 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import { readResources, writeResources, Resource } from './storage'
+import { Resource } from './storage'
+import { listResources, saveResource } from './resourceStore'
 import { getNews } from './newsCache'
 
 const app = express()
@@ -11,12 +12,16 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-app.get('/api/resources', (_req, res) => {
-  const resources = readResources()
-  res.json(resources)
+app.get('/api/resources', async (_req, res) => {
+  try {
+    const resources = await listResources()
+    res.json(resources)
+  } catch {
+    res.status(500).json({ error: 'Failed to load resources.' })
+  }
 })
 
-app.post('/api/resources', (req, res) => {
+app.post('/api/resources', async (req, res) => {
   const { title, url, description, category, tags, submitterName, stars, githubRepo } = req.body
 
   if (!title || typeof title !== 'string' || title.trim() === '') {
@@ -42,10 +47,12 @@ app.post('/api/resources', (req, res) => {
     githubRepo: typeof githubRepo === 'string' && githubRepo.trim() ? githubRepo.trim() : undefined,
   }
 
-  const existing = readResources()
-  writeResources([resource, ...existing])
-
-  return res.status(201).json(resource)
+  try {
+    const savedResource = await saveResource(resource)
+    return res.status(201).json(savedResource)
+  } catch {
+    return res.status(500).json({ error: 'Failed to save resource.' })
+  }
 })
 
 app.get('/api/news', async (_req, res) => {
