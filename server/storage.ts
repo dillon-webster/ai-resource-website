@@ -12,6 +12,8 @@ export interface Resource {
   tags?: string[]
   submitterName?: string
   createdAt: string
+  stars?: number
+  githubRepo?: string
 }
 
 export function readResources(): Resource[] {

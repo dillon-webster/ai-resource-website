@@ -48,24 +48,24 @@ export default function ResourceCard({ resource, index }: Props) {
   return (
     <article
       ref={cardRef}
-      className={`rounded-xl p-5 border transition-all duration-500 ease-out hover:border-[#4361ee]/60 hover:shadow-[0_0_28px_rgba(67,97,238,0.18)] group flex flex-col gap-3 ${
+      className={`rounded-xl p-5 border transition-all duration-500 ease-out hover:border-[#4F76F6]/60 hover:shadow-[0_0_28px_rgba(79,118,246,0.18)] group flex flex-col gap-3 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
       }`}
       style={{
-        background: 'rgba(13, 27, 42, 0.85)',
+        background: 'rgba(31, 43, 55, 0.95)',
         borderColor: 'rgba(255,255,255,0.08)',
         transitionDelay: isVisible ? `${Math.min(index % 3, 2) * 70}ms` : '0ms',
       }}
     >
       <div>
-        <h2 className="text-base font-semibold text-white group-hover:text-[#4361ee] transition-colors leading-snug mb-1">
+        <h2 className="text-base font-semibold text-white group-hover:text-[#4F76F6] transition-colors leading-snug mb-1">
           {resource.title}
         </h2>
         <a
           href={resource.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-[#4361ee]/80 hover:text-[#7b2ff7] transition-colors block truncate"
+          className="text-xs text-[#4F76F6]/80 hover:text-[#77F2A1] transition-colors block truncate"
         >
           {resource.url}
         </a>
@@ -78,7 +78,7 @@ export default function ResourceCard({ resource, index }: Props) {
       {(resource.category || (resource.tags && resource.tags.length > 0)) && (
         <div className="flex flex-wrap gap-1.5">
           {resource.category && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium text-white/80 bg-[#4361ee]/20 border border-[#4361ee]/30">
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium text-white/80 bg-[#4F76F6]/20 border border-[#4F76F6]/30">
               {resource.category}
             </span>
           )}
@@ -95,7 +95,12 @@ export default function ResourceCard({ resource, index }: Props) {
 
       <div className="flex items-center justify-between text-xs text-white/35 mt-auto pt-1">
         <span>{resource.submitterName ? `by ${resource.submitterName}` : ''}</span>
-        <span>{timeAgo(resource.createdAt)}</span>
+        <div className="flex items-center gap-3">
+          {resource.stars !== undefined && resource.stars > 0 && (
+            <span className="text-[#77F2A1]/70">★ {resource.stars.toLocaleString()}</span>
+          )}
+          <span>{timeAgo(resource.createdAt)}</span>
+        </div>
       </div>
     </article>
   )

@@ -17,7 +17,7 @@ app.get('/api/resources', (_req, res) => {
 })
 
 app.post('/api/resources', (req, res) => {
-  const { title, url, description, category, tags, submitterName } = req.body
+  const { title, url, description, category, tags, submitterName, stars, githubRepo } = req.body
 
   if (!title || typeof title !== 'string' || title.trim() === '') {
     return res.status(400).json({ error: 'Title is required.' })
@@ -38,6 +38,8 @@ app.post('/api/resources', (req, res) => {
         : undefined,
     submitterName: typeof submitterName === 'string' && submitterName.trim() ? submitterName.trim() : undefined,
     createdAt: new Date().toISOString(),
+    stars: typeof stars === 'number' && stars >= 0 ? Math.floor(stars) : undefined,
+    githubRepo: typeof githubRepo === 'string' && githubRepo.trim() ? githubRepo.trim() : undefined,
   }
 
   const existing = readResources()

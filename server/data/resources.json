@@ -1,11 +1,38 @@
 [
   {
+    "id": "f361bf60-7067-4cc4-864f-e2a249de852f",
+    "title": "anthropic-sdk-python",
+    "url": "https://github.com/anthropics/anthropic-sdk-python",
+    "description": "Test",
+    "category": "Claude Code Plugin",
+    "tags": [
+      "plugin"
+    ],
+    "submitterName": "Dillon",
+    "createdAt": "2026-05-13T01:03:07.253Z",
+    "stars": 3420,
+    "githubRepo": "anthropics/anthropic-sdk-python"
+  },
+  {
+    "id": "d85af056-9aa4-41f2-82b7-f660c00b1af0",
+    "title": "Test Plugin",
+    "url": "https://github.com/owner/repo",
+    "category": "Claude Code Plugin",
+    "createdAt": "2026-05-13T01:01:00.500Z",
+    "stars": 42,
+    "githubRepo": "owner/repo"
+  },
+  {
     "id": "a1b2c3d4-0001-0000-0000-000000000001",
     "title": "Attention Is All You Need",
     "url": "https://arxiv.org/abs/1706.03762",
     "description": "The original transformer paper from Google Brain. Foundational reading for understanding how modern LLMs work.",
     "category": "Paper",
-    "tags": ["transformers", "attention", "llm"],
+    "tags": [
+      "transformers",
+      "attention",
+      "llm"
+    ],
     "submitterName": "Prof. Martinez",
     "createdAt": "2026-05-12T14:00:00.000Z"
   },
@@ -15,7 +42,11 @@
     "url": "https://www.promptingguide.ai",
     "description": "Comprehensive guide covering chain-of-thought, few-shot prompting, and advanced techniques for getting better outputs from AI models.",
     "category": "Tutorial",
-    "tags": ["prompting", "techniques", "beginner-friendly"],
+    "tags": [
+      "prompting",
+      "techniques",
+      "beginner-friendly"
+    ],
     "submitterName": "Alex K.",
     "createdAt": "2026-05-12T12:30:00.000Z"
   },
@@ -25,7 +56,11 @@
     "url": "https://docs.anthropic.com",
     "description": "Official Anthropic docs — everything you need to start building with Claude, including tool use, vision, and prompt caching.",
     "category": "Tool",
-    "tags": ["api", "claude", "anthropic"],
+    "tags": [
+      "api",
+      "claude",
+      "anthropic"
+    ],
     "submitterName": "Jordan L.",
     "createdAt": "2026-05-12T11:00:00.000Z"
   },
@@ -35,7 +70,11 @@
     "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi",
     "description": "Visual, intuitive explanations of how neural networks learn. Best intro to the math behind deep learning.",
     "category": "Video",
-    "tags": ["neural-networks", "math", "visual"],
+    "tags": [
+      "neural-networks",
+      "math",
+      "visual"
+    ],
     "submitterName": "Sam T.",
     "createdAt": "2026-05-12T09:45:00.000Z"
   },
@@ -45,7 +84,11 @@
     "url": "https://python.langchain.com/docs/get_started/quickstart",
     "description": "Get an LLM-powered app running in minutes. Good starting point for the class project.",
     "category": "Tutorial",
-    "tags": ["langchain", "python", "agents"],
+    "tags": [
+      "langchain",
+      "python",
+      "agents"
+    ],
     "createdAt": "2026-05-11T18:20:00.000Z"
   },
   {
@@ -54,7 +97,11 @@
     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
     "description": "2-hour video where Karpathy codes a GPT from scratch in PyTorch. Dense but incredibly rewarding.",
     "category": "Video",
-    "tags": ["gpt", "pytorch", "from-scratch"],
+    "tags": [
+      "gpt",
+      "pytorch",
+      "from-scratch"
+    ],
     "submitterName": "Riley M.",
     "createdAt": "2026-05-11T15:00:00.000Z"
   },
@@ -64,7 +111,11 @@
     "url": "https://cookbook.openai.com",
     "description": "Code examples and guides for common tasks with GPT models — embeddings, function calling, RAG patterns, and more.",
     "category": "Article",
-    "tags": ["openai", "examples", "rag"],
+    "tags": [
+      "openai",
+      "examples",
+      "rag"
+    ],
     "submitterName": "Casey B.",
     "createdAt": "2026-05-11T10:00:00.000Z"
   },
@@ -74,7 +125,11 @@
     "url": "https://huggingface.co/docs/transformers/quicktour",
     "description": "The go-to library for working with open-source models. This quicktour covers inference, fine-tuning, and pipelines.",
     "category": "Tool",
-    "tags": ["huggingface", "open-source", "fine-tuning"],
+    "tags": [
+      "huggingface",
+      "open-source",
+      "fine-tuning"
+    ],
     "createdAt": "2026-05-10T20:00:00.000Z"
   }
 ]

@@ -4,15 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: {
-          dark: '#0a0f1e',
-          mid: '#0d1b2a',
-        },
         brand: {
-          orange: '#ff6b35',
-          amber: '#f7931e',
-          blue: '#4361ee',
-          purple: '#7b2ff7',
+          navy: '#1F2B37',
+          blue: '#4F76F6',
+          light: '#F9F9F9',
+          mint: '#77F2A1',
         },
       },
     },

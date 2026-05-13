@@ -29,7 +29,6 @@ export default function Home() {
       })
   }, [])
 
-  // Category counts derived from full resource list
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {}
     resources.forEach((r) => {
@@ -38,7 +37,6 @@ export default function Home() {
     return counts
   }, [resources])
 
-  // Filtered resources based on selected category
   const filtered = useMemo(() => {
     if (!selectedCategory) return resources
     return resources.filter((r) => r.category === selectedCategory)
@@ -51,7 +49,7 @@ export default function Home() {
       <div className="relative z-10 pt-24 pb-16">
         {/* Hero */}
         <div className="text-center mb-10 px-6">
-          <h1 className="text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-[#ff6b35] via-white to-[#4361ee] bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-[#77F2A1] via-white to-[#4F76F6] bg-clip-text text-transparent">
             AI Resources
           </h1>
           <p className="text-white/50 text-lg">Community-curated links for the class</p>
@@ -65,7 +63,7 @@ export default function Home() {
         {!loading && !error && resources.length === 0 && (
           <p className="text-center text-white/35 text-sm px-6">
             No resources yet —{' '}
-            <Link to="/submit" className="text-[#4361ee] hover:underline">
+            <Link to="/submit" className="text-[#4F76F6] hover:underline">
               submit the first one
             </Link>
             .
@@ -88,7 +86,7 @@ export default function Home() {
                   onClick={() => setSelectedCategory(null)}
                   className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all text-left ${
                     selectedCategory === null
-                      ? 'bg-gradient-to-r from-[#4361ee]/20 to-[#7b2ff7]/20 border border-[#4361ee]/30 text-white'
+                      ? 'bg-gradient-to-r from-[#4F76F6]/20 to-[#77F2A1]/20 border border-[#4F76F6]/30 text-white'
                       : 'text-white/50 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -102,7 +100,7 @@ export default function Home() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all text-left ${
                       selectedCategory === cat
-                        ? 'bg-gradient-to-r from-[#4361ee]/20 to-[#7b2ff7]/20 border border-[#4361ee]/30 text-white'
+                        ? 'bg-gradient-to-r from-[#4F76F6]/20 to-[#77F2A1]/20 border border-[#4F76F6]/30 text-white'
                         : 'text-white/50 hover:text-white hover:bg-white/5 border border-transparent'
                     }`}
                   >
@@ -122,7 +120,7 @@ export default function Home() {
                   onClick={() => setSelectedCategory(null)}
                   className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     selectedCategory === null
-                      ? 'bg-gradient-to-r from-[#4361ee]/20 to-[#7b2ff7]/20 border-[#4361ee]/40 text-white'
+                      ? 'bg-gradient-to-r from-[#4F76F6]/20 to-[#77F2A1]/20 border-[#4F76F6]/40 text-white'
                       : 'border-white/10 text-white/50'
                   }`}
                 >
@@ -134,7 +132,7 @@ export default function Home() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                       selectedCategory === cat
-                        ? 'bg-gradient-to-r from-[#4361ee]/20 to-[#7b2ff7]/20 border-[#4361ee]/40 text-white'
+                        ? 'bg-gradient-to-r from-[#4F76F6]/20 to-[#77F2A1]/20 border-[#4F76F6]/40 text-white'
                         : 'border-white/10 text-white/50'
                     }`}
                   >

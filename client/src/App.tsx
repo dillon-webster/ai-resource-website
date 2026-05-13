@@ -5,7 +5,7 @@ import Submit from './pages/Submit'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#0a0f1e] text-white">
+    <div className="min-h-screen bg-[#0a1520] text-white">
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />

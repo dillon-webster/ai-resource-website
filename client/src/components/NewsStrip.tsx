@@ -133,8 +133,8 @@ export default function NewsStrip({ focusRef, onExpandChange }: Props) {
                   maxHeight: isOpen ? `${articles.slice(1).length * 90}px` : '0px',
                   borderLeftColor: cfg.color,
                   borderLeftWidth: '2px',
-                  background: 'rgba(10, 15, 30, 0.95)',
-                  backdropFilter: 'blur(8px)',
+                  background: 'rgba(10, 21, 32, 0.85)',
+                  backdropFilter: 'blur(16px)',
                 }}
               >
                 {articles.slice(1).map((article, i) => (

@@ -11,7 +11,7 @@ export default function Submit() {
       className="min-h-screen pt-24 pb-16 px-6"
       style={{
         background:
-          'radial-gradient(ellipse at 15% 60%, rgba(255,107,53,0.07) 0%, transparent 55%), radial-gradient(ellipse at 85% 40%, rgba(123,47,247,0.07) 0%, transparent 55%), #0a0f1e',
+          'radial-gradient(ellipse at 15% 60%, rgba(119,242,161,0.07) 0%, transparent 55%), radial-gradient(ellipse at 85% 40%, rgba(79,118,246,0.07) 0%, transparent 55%), #0a1520',
       }}
     >
       <div className="max-w-lg mx-auto">
@@ -19,7 +19,7 @@ export default function Submit() {
         <p className="text-white/45 text-sm mb-8">Share something useful with the class.</p>
         <div
           className="rounded-2xl p-8 border border-white/10"
-          style={{ background: 'rgba(13, 27, 42, 0.92)' }}
+          style={{ background: 'rgba(26, 36, 48, 0.92)' }}
         >
           <SubmitForm onSuccess={handleSuccess} />
         </div>

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Resource } from '../types'
+import { parseGithubRepo } from '../utils/parseGithubUrl'
 
-const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Paper', 'Other']
+const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Paper', 'Claude Code Plugin', 'Other']
 
 interface FormState {
   title: string
@@ -36,6 +37,9 @@ export default function SubmitForm({ onSuccess }: Props) {
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
+  const [stars, setStars] = useState<number | undefined>(undefined)
+  const [githubRepo, setGithubRepo] = useState<string | undefined>(undefined)
+  const [githubStatus, setGithubStatus] = useState<'idle' | 'loading' | 'error'>('idle')
 
   function validate(): Errors {
     const errs: Errors = {}
@@ -52,6 +56,39 @@ export default function SubmitForm({ onSuccess }: Props) {
       if (field === 'title' || field === 'url') {
         setErrors((prev) => ({ ...prev, [field]: undefined }))
       }
+      if (field === 'category') {
+        setStars(undefined)
+        setGithubRepo(undefined)
+        setGithubStatus('idle')
+      }
+    }
+  }
+
+  async function handleUrlBlur() {
+    if (form.category !== 'Claude Code Plugin') return
+    const parsed = parseGithubRepo(form.url)
+    if (!parsed) return
+
+    setGithubStatus('loading')
+    try {
+      const res = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}`)
+      if (!res.ok) throw new Error('not found')
+      const data = await res.json() as {
+        name: string
+        description: string | null
+        stargazers_count: number
+        full_name: string
+      }
+      setForm((prev) => ({
+        ...prev,
+        title: data.name,
+        description: data.description ?? '',
+      }))
+      setStars(data.stargazers_count)
+      setGithubRepo(data.full_name)
+      setGithubStatus('idle')
+    } catch {
+      setGithubStatus('error')
     }
   }
 
@@ -71,7 +108,7 @@ export default function SubmitForm({ onSuccess }: Props) {
       const res = await fetch('/api/resources', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, stars, githubRepo }),
       })
       const data: Resource | { error: string } = await res.json()
 
@@ -90,7 +127,7 @@ export default function SubmitForm({ onSuccess }: Props) {
   }
 
   const inputBase =
-    'w-full rounded-lg px-4 py-2.5 text-sm text-white placeholder-white/30 border border-white/10 focus:outline-none focus:border-[#4361ee]/60 focus:ring-1 focus:ring-[#4361ee]/40 transition'
+    'w-full rounded-lg px-4 py-2.5 text-sm text-white placeholder-white/30 border border-white/10 focus:outline-none focus:border-[#4F76F6]/60 focus:ring-1 focus:ring-[#4F76F6]/40 transition'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -121,16 +158,27 @@ export default function SubmitForm({ onSuccess }: Props) {
 
       <div>
         <label className="block text-sm text-white/70 mb-1.5">
-          URL <span className="text-red-400">*</span>
+          {form.category === 'Claude Code Plugin' ? 'GitHub Repo URL' : 'URL'}{' '}
+          <span className="text-red-400">*</span>
         </label>
         <input
           type="text"
           value={form.url}
           onChange={handleChange('url')}
-          placeholder="https://..."
+          onBlur={handleUrlBlur}
+          placeholder={form.category === 'Claude Code Plugin' ? 'https://github.com/owner/repo' : 'https://...'}
           className={`${inputBase} bg-white/5`}
         />
         {errors.url && <p className="mt-1 text-xs text-red-400">{errors.url}</p>}
+        {githubStatus === 'loading' && (
+          <p className="mt-1 text-xs text-white/40">Fetching repo info...</p>
+        )}
+        {githubStatus === 'error' && (
+          <p className="mt-1 text-xs text-white/40">Couldn't fetch repo info — fill in manually.</p>
+        )}
+        {githubStatus === 'idle' && githubRepo && (
+          <p className="mt-1 text-xs text-[#77F2A1]/80">✓ {githubRepo} · ★ {stars?.toLocaleString()}</p>
+        )}
       </div>
 
       <div>
@@ -149,11 +197,11 @@ export default function SubmitForm({ onSuccess }: Props) {
         <select
           value={form.category}
           onChange={handleChange('category')}
-          className={`${inputBase} bg-[#0d1b2a]`}
+          className={`${inputBase} bg-[#0a1520]`}
         >
           <option value="">Select a category</option>
           {CATEGORIES.map((c) => (
-            <option key={c} value={c} style={{ background: '#0d1b2a' }}>
+            <option key={c} value={c} style={{ background: '#0a1520' }}>
               {c}
             </option>
           ))}
@@ -189,7 +237,7 @@ export default function SubmitForm({ onSuccess }: Props) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full py-3 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-[#4361ee] to-[#7b2ff7] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        className="w-full py-3 rounded-lg font-semibold text-sm text-[#1F2B37] bg-[#77F2A1] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
         {submitting ? 'Submitting...' : 'Submit Resource'}
       </button>
