@@ -13,5 +13,11 @@ export function getAdminToken(req: AdminTokenRequest): string | undefined {
     return req.body.adminToken
   }
 
-  return req.header('x-admin-token')
+  const raw = req.header('x-admin-token')
+  if (raw === undefined) return undefined
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
 }
