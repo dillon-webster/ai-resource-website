@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Resource } from './storage'
 import { deleteResource, listResources, saveResource } from './resourceStore'
 import { getNews } from './newsCache'
+import { getAdminToken } from './adminAuth'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -18,7 +19,7 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
   if (!adminToken) {
     return res.status(503).json({ error: 'Admin actions are not configured.' })
   }
-  if (req.header('x-admin-token') !== adminToken) {
+  if (getAdminToken(req) !== adminToken) {
     return res.status(401).json({ error: 'Invalid admin token.' })
   }
   return next()

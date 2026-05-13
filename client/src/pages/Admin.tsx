@@ -56,7 +56,8 @@ export default function Admin() {
     try {
       const res = await fetch(`/api/admin/resources/${resource.id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-token': adminToken },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminToken }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({ error: 'Delete failed.' })) as { error?: string }
