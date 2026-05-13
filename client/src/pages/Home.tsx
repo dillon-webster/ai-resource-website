@@ -56,13 +56,13 @@ export default function Home() {
     <div className="relative min-h-screen">
       <AnimatedBackground focusRef={focusRef} />
 
-      <div className="relative z-10 pt-24 pb-16">
+      <div className="relative z-10 pt-20 sm:pt-24 pb-12 sm:pb-16">
         {/* Hero */}
-        <div className="text-center mb-10 px-6">
-          <h1 className="text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-[#77F2A1] via-white to-[#4F76F6] bg-clip-text text-transparent">
+        <div className="text-center mb-7 sm:mb-10 px-5 sm:px-6">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-2 sm:mb-3 bg-gradient-to-r from-[#77F2A1] via-white to-[#4F76F6] bg-clip-text text-transparent">
             AI Resources
           </h1>
-          <p className="text-white/50 text-lg">Community-curated links for the class</p>
+          <p className="text-white/50 text-base sm:text-lg">Community-curated links for the class</p>
         </div>
 
         <NewsStrip focusRef={focusRef} onExpandChange={setNewsExpanded} />
