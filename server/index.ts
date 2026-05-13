@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import rateLimit from 'express-rate-limit'
 import { Resource } from './storage'
-import { deleteResource, listResources, saveResource } from './resourceStore'
+import { deleteResource, listResources, saveResource, voteResource } from './resourceStore'
 import { getNews } from './newsCache'
 import { getAdminToken } from './adminAuth'
 
@@ -29,6 +29,14 @@ const adminLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please try again later.' },
+})
+
+const voteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many votes. Please try again later.' },
 })
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
@@ -82,6 +90,16 @@ app.post('/api/resources', submitLimiter, async (req, res) => {
     return res.status(201).json(savedResource)
   } catch {
     return res.status(500).json({ error: 'Failed to save resource.' })
+  }
+})
+
+app.post('/api/resources/:id/vote', voteLimiter, async (req, res) => {
+  try {
+    const resource = await voteResource(req.params.id)
+    if (!resource) return res.status(404).json({ error: 'Resource not found.' })
+    return res.json({ votes: resource.votes })
+  } catch {
+    return res.status(500).json({ error: 'Failed to record vote.' })
   }
 })
 

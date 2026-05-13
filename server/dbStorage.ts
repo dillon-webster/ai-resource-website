@@ -17,6 +17,7 @@ interface ResourceRow {
   created_at: Date | string
   stars: number | null
   github_repo: string | null
+  votes: number
 }
 
 const pool = new Pool({
@@ -41,6 +42,7 @@ export function mapResourceRow(row: ResourceRow): Resource {
   if (row.submitter_name) resource.submitterName = row.submitter_name
   if (row.stars !== null) resource.stars = row.stars
   if (row.github_repo) resource.githubRepo = row.github_repo
+  resource.votes = row.votes ?? 0
   return resource
 }
 
@@ -54,6 +56,7 @@ async function ensureReady(): Promise<void> {
 async function initializeDatabase(): Promise<void> {
   const schema = fs.readFileSync(SCHEMA_FILE, 'utf-8')
   await pool.query(schema)
+  await pool.query('ALTER TABLE resources ADD COLUMN IF NOT EXISTS votes integer NOT NULL DEFAULT 0')
 
   const { rows } = await pool.query<{ count: string }>('SELECT COUNT(*) FROM resources')
   if (Number(rows[0]?.count ?? 0) > 0) return
@@ -74,18 +77,10 @@ async function insertResource(resource: Resource): Promise<Resource> {
   const { rows } = await pool.query<ResourceRow>(
     `
       INSERT INTO resources (
-        id,
-        title,
-        url,
-        description,
-        category,
-        tags,
-        submitter_name,
-        created_at,
-        stars,
-        github_repo
+        id, title, url, description, category, tags,
+        submitter_name, created_at, stars, github_repo, votes
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       ON CONFLICT (id) DO UPDATE SET
         title = EXCLUDED.title,
         url = EXCLUDED.url,
@@ -109,9 +104,19 @@ async function insertResource(resource: Resource): Promise<Resource> {
       resource.createdAt,
       resource.stars ?? null,
       resource.githubRepo ?? null,
+      resource.votes ?? 0,
     ],
   )
   return mapResourceRow(rows[0])
+}
+
+export async function incrementVoteDb(id: string): Promise<Resource | null> {
+  await ensureReady()
+  const { rows } = await pool.query<ResourceRow>(
+    'UPDATE resources SET votes = votes + 1 WHERE id = $1 RETURNING *',
+    [id],
+  )
+  return rows[0] ? mapResourceRow(rows[0]) : null
 }
 
 export async function readDbResources(): Promise<Resource[]> {

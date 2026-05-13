@@ -14,6 +14,7 @@ export interface Resource {
   createdAt: string
   stars?: number
   githubRepo?: string
+  votes?: number
 }
 
 export function readResources(): Resource[] {

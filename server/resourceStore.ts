@@ -1,4 +1,4 @@
-import { deleteDbResource, readDbResources, writeDbResource } from './dbStorage'
+import { deleteDbResource, incrementVoteDb, readDbResources, writeDbResource } from './dbStorage'
 import { deleteJsonResource, readResources, writeResources, Resource } from './storage'
 
 const useDatabase = Boolean(process.env.DATABASE_URL)
@@ -26,4 +26,17 @@ export async function deleteResource(id: string): Promise<boolean> {
   }
 
   return deleteJsonResource(id)
+}
+
+export async function voteResource(id: string): Promise<Resource | null> {
+  if (useDatabase) {
+    return incrementVoteDb(id)
+  }
+
+  const resources = readResources()
+  const resource = resources.find((r) => r.id === id)
+  if (!resource) return null
+  resource.votes = (resource.votes ?? 0) + 1
+  writeResources(resources)
+  return resource
 }
