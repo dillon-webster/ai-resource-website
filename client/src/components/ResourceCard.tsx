@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Resource } from '../types'
 
+const VOTED_KEY = 'ai-resource-voted-ids'
+const NEW_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000
+
 interface Props {
   resource: Resource
   index: number
@@ -17,9 +20,28 @@ function timeAgo(iso: string): string {
   return 'just now'
 }
 
+function getVotedIds(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(VOTED_KEY) ?? '[]') as string[])
+  } catch {
+    return new Set()
+  }
+}
+
+function saveVotedId(id: string) {
+  const ids = getVotedIds()
+  ids.add(id)
+  localStorage.setItem(VOTED_KEY, JSON.stringify([...ids]))
+}
+
 export default function ResourceCard({ resource, index }: Props) {
   const cardRef = useRef<HTMLElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const [votes, setVotes] = useState(resource.votes ?? 0)
+  const [hasVoted, setHasVoted] = useState(() => getVotedIds().has(resource.id))
+  const [voting, setVoting] = useState(false)
+
+  const isNew = Date.now() - new Date(resource.createdAt).getTime() < NEW_THRESHOLD_MS
 
   useEffect(() => {
     const card = cardRef.current
@@ -45,6 +67,29 @@ export default function ResourceCard({ resource, index }: Props) {
     return () => observer.disconnect()
   }, [])
 
+  async function handleVote() {
+    if (hasVoted || voting) return
+    setVoting(true)
+    setVotes((v) => v + 1)
+    setHasVoted(true)
+    saveVotedId(resource.id)
+    try {
+      const res = await fetch(`/api/resources/${resource.id}/vote`, { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json() as { votes: number }
+        setVotes(data.votes)
+      } else {
+        setVotes((v) => v - 1)
+        setHasVoted(false)
+      }
+    } catch {
+      setVotes((v) => v - 1)
+      setHasVoted(false)
+    } finally {
+      setVoting(false)
+    }
+  }
+
   return (
     <article
       ref={cardRef}
@@ -58,9 +103,16 @@ export default function ResourceCard({ resource, index }: Props) {
       }}
     >
       <div>
-        <h2 className="text-base font-semibold text-white group-hover:text-[#4F76F6] transition-colors leading-snug mb-1">
-          {resource.title}
-        </h2>
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h2 className="text-base font-semibold text-white group-hover:text-[#4F76F6] transition-colors leading-snug">
+            {resource.title}
+          </h2>
+          {isNew && (
+            <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#77F2A1]/15 text-[#77F2A1] border border-[#77F2A1]/30">
+              New
+            </span>
+          )}
+        </div>
         <a
           href={resource.url}
           target="_blank"
@@ -99,6 +151,21 @@ export default function ResourceCard({ resource, index }: Props) {
           {resource.stars !== undefined && resource.stars > 0 && (
             <span className="text-[#77F2A1]/70">★ {resource.stars.toLocaleString()}</span>
           )}
+          <button
+            onClick={handleVote}
+            disabled={hasVoted || voting}
+            title={hasVoted ? 'Already voted' : 'Upvote'}
+            className={`flex items-center gap-1 transition-colors ${
+              hasVoted
+                ? 'text-[#77F2A1]/80 cursor-default'
+                : 'hover:text-[#77F2A1] cursor-pointer'
+            }`}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M6 1L11 7H7.5V11H4.5V7H1L6 1Z" />
+            </svg>
+            <span>{votes}</span>
+          </button>
           <span>{timeAgo(resource.createdAt)}</span>
         </div>
       </div>

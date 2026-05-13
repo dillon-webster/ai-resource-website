@@ -12,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetch('/api/resources')
@@ -38,9 +39,18 @@ export default function Home() {
   }, [resources])
 
   const filtered = useMemo(() => {
-    if (!selectedCategory) return resources
-    return resources.filter((r) => r.category === selectedCategory)
-  }, [resources, selectedCategory])
+    const term = search.trim().toLowerCase()
+    return resources.filter((r) => {
+      if (selectedCategory && r.category !== selectedCategory) return false
+      if (!term) return true
+      return (
+        r.title.toLowerCase().includes(term) ||
+        r.description?.toLowerCase().includes(term) ||
+        r.category?.toLowerCase().includes(term) ||
+        r.tags?.some((t) => t.toLowerCase().includes(term))
+      )
+    })
+  }, [resources, selectedCategory, search])
 
   return (
     <div className="relative min-h-screen">
@@ -114,6 +124,20 @@ export default function Home() {
             {/* ── Main content ─────────────────────────────────────────────── */}
             <div className="flex-1 min-w-0">
 
+              {/* Search */}
+              <div className="relative mb-5">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search resources…"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-lg text-sm text-white placeholder-white/30 bg-white/5 border border-white/10 focus:outline-none focus:border-[#4F76F6]/60 focus:ring-1 focus:ring-[#4F76F6]/40 transition"
+                />
+              </div>
+
               {/* Mobile category pills */}
               <div className="flex lg:hidden gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
                 <button
@@ -149,9 +173,9 @@ export default function Home() {
                 </div>
               )}
 
-              {filtered.length === 0 && selectedCategory && (
+              {filtered.length === 0 && (selectedCategory || search) && (
                 <p className="text-white/35 text-sm text-center py-12">
-                  No {selectedCategory} resources yet.
+                  No resources match your search.
                 </p>
               )}
             </div>
