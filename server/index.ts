@@ -3,6 +3,7 @@ import cors from 'cors'
 import path from 'path'
 import { Request, Response, NextFunction } from 'express'
 import { v4 as uuidv4 } from 'uuid'
+import rateLimit from 'express-rate-limit'
 import { Resource } from './storage'
 import { deleteResource, listResources, saveResource } from './resourceStore'
 import { getNews } from './newsCache'
@@ -13,6 +14,22 @@ const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
+
+const submitLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many submissions. Please try again later.' },
+})
+
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+})
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const adminToken = process.env.ADMIN_TOKEN
@@ -34,7 +51,7 @@ app.get('/api/resources', async (_req, res) => {
   }
 })
 
-app.post('/api/resources', async (req, res) => {
+app.post('/api/resources', submitLimiter, async (req, res) => {
   const { title, url, description, category, tags, submitterName, stars, githubRepo } = req.body
 
   if (!title || typeof title !== 'string' || title.trim() === '') {
@@ -68,7 +85,7 @@ app.post('/api/resources', async (req, res) => {
   }
 })
 
-app.delete('/api/admin/resources/:id', requireAdmin, async (req, res) => {
+app.delete('/api/admin/resources/:id', adminLimiter, requireAdmin, async (req, res) => {
   try {
     const deleted = await deleteResource(req.params.id)
     if (!deleted) {
