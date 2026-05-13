@@ -1,5 +1,5 @@
-import { readDbResources, writeDbResource } from './dbStorage'
-import { readResources, writeResources, Resource } from './storage'
+import { deleteDbResource, readDbResources, writeDbResource } from './dbStorage'
+import { deleteJsonResource, readResources, writeResources, Resource } from './storage'
 
 const useDatabase = Boolean(process.env.DATABASE_URL)
 
@@ -18,4 +18,12 @@ export async function saveResource(resource: Resource): Promise<Resource> {
   const existing = readResources()
   writeResources([resource, ...existing])
   return resource
+}
+
+export async function deleteResource(id: string): Promise<boolean> {
+  if (useDatabase) {
+    return deleteDbResource(id)
+  }
+
+  return deleteJsonResource(id)
 }

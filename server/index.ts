@@ -1,9 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import path from 'path'
+import { Request, Response, NextFunction } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import { Resource } from './storage'
-import { listResources, saveResource } from './resourceStore'
+import { deleteResource, listResources, saveResource } from './resourceStore'
 import { getNews } from './newsCache'
 
 const app = express()
@@ -11,6 +12,17 @@ const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const adminToken = process.env.ADMIN_TOKEN
+  if (!adminToken) {
+    return res.status(503).json({ error: 'Admin actions are not configured.' })
+  }
+  if (req.header('x-admin-token') !== adminToken) {
+    return res.status(401).json({ error: 'Invalid admin token.' })
+  }
+  return next()
+}
 
 app.get('/api/resources', async (_req, res) => {
   try {
@@ -52,6 +64,18 @@ app.post('/api/resources', async (req, res) => {
     return res.status(201).json(savedResource)
   } catch {
     return res.status(500).json({ error: 'Failed to save resource.' })
+  }
+})
+
+app.delete('/api/admin/resources/:id', requireAdmin, async (req, res) => {
+  try {
+    const deleted = await deleteResource(req.params.id)
+    if (!deleted) {
+      return res.status(404).json({ error: 'Resource not found.' })
+    }
+    return res.status(204).send()
+  } catch {
+    return res.status(500).json({ error: 'Failed to delete resource.' })
   }
 })
 

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Nav from './components/Nav'
 import Home from './pages/Home'
 import Submit from './pages/Submit'
+import Admin from './pages/Admin'
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/submit" element={<Submit />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </div>
   )

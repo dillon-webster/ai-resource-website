@@ -29,3 +29,23 @@ export function readResources(): Resource[] {
 export function writeResources(resources: Resource[]): void {
   fs.writeFileSync(DATA_FILE, JSON.stringify(resources, null, 2), 'utf-8')
 }
+
+export function removeResourceById(
+  resources: Resource[],
+  id: string,
+): { resources: Resource[]; deleted: boolean } {
+  const filtered = resources.filter((resource) => resource.id !== id)
+  return {
+    resources: filtered,
+    deleted: filtered.length !== resources.length,
+  }
+}
+
+export function deleteJsonResource(id: string): boolean {
+  const existing = readResources()
+  const result = removeResourceById(existing, id)
+  if (result.deleted) {
+    writeResources(result.resources)
+  }
+  return result.deleted
+}

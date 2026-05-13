@@ -137,3 +137,9 @@ export async function writeDbResource(resource: Resource): Promise<Resource> {
   await ensureReady()
   return insertResource(resource)
 }
+
+export async function deleteDbResource(id: string): Promise<boolean> {
+  await ensureReady()
+  const result = await pool.query('DELETE FROM resources WHERE id = $1', [id])
+  return (result.rowCount ?? 0) > 0
+}
