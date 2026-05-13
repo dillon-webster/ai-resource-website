@@ -3,7 +3,8 @@ import path from 'path'
 import { Pool } from 'pg'
 import { Resource } from './storage'
 
-const DATA_FILE = path.join(__dirname, 'data', 'resources.json')
+const DATA_FILE   = path.join(__dirname, 'data', 'resources.json')
+const SCHEMA_FILE = path.join(__dirname, 'db', 'schema.sql')
 
 interface ResourceRow {
   id: string
@@ -51,20 +52,8 @@ async function ensureReady(): Promise<void> {
 }
 
 async function initializeDatabase(): Promise<void> {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS resources (
-      id uuid PRIMARY KEY,
-      title text NOT NULL,
-      url text NOT NULL,
-      description text,
-      category text,
-      tags text[],
-      submitter_name text,
-      created_at timestamptz NOT NULL DEFAULT now(),
-      stars integer,
-      github_repo text
-    )
-  `)
+  const schema = fs.readFileSync(SCHEMA_FILE, 'utf-8')
+  await pool.query(schema)
 
   const { rows } = await pool.query<{ count: string }>('SELECT COUNT(*) FROM resources')
   if (Number(rows[0]?.count ?? 0) > 0) return
