@@ -1,28 +1,5 @@
 [
   {
-    "id": "f361bf60-7067-4cc4-864f-e2a249de852f",
-    "title": "anthropic-sdk-python",
-    "url": "https://github.com/anthropics/anthropic-sdk-python",
-    "description": "Test",
-    "category": "Claude Code Plugin",
-    "tags": [
-      "plugin"
-    ],
-    "submitterName": "Dillon",
-    "createdAt": "2026-05-13T01:03:07.253Z",
-    "stars": 3420,
-    "githubRepo": "anthropics/anthropic-sdk-python"
-  },
-  {
-    "id": "d85af056-9aa4-41f2-82b7-f660c00b1af0",
-    "title": "Test Plugin",
-    "url": "https://github.com/owner/repo",
-    "category": "Claude Code Plugin",
-    "createdAt": "2026-05-13T01:01:00.500Z",
-    "stars": 42,
-    "githubRepo": "owner/repo"
-  },
-  {
     "id": "a1b2c3d4-0001-0000-0000-000000000001",
     "title": "Attention Is All You Need",
     "url": "https://arxiv.org/abs/1706.03762",
