@@ -21,6 +21,7 @@ export default function NewsStrip({ focusRef, onExpandChange }: Props) {
   const [sources, setSources] = useState<(NewsSource | null)[]>([])
   const [loading, setLoading] = useState(true)
   const [hovered, setHovered] = useState<NewsSource['source'] | null>(null)
+  const [selectedSource, setSelectedSource] = useState<NewsSource['source']>('anthropic')
 
   // expandTimer: delays showing extra articles (intent confirmation)
   // leaveTimer: delays releasing camera focus (smooths card-to-card transition)
@@ -33,7 +34,11 @@ export default function NewsStrip({ focusRef, onExpandChange }: Props) {
         if (!r.ok) throw new Error('failed')
         return r.json() as Promise<(NewsSource | null)[]>
       })
-      .then((data) => { setSources(data); setLoading(false) })
+      .then((data) => {
+        setSources(data)
+        setSelectedSource(data.find((source) => source?.articles?.length)?.source ?? 'anthropic')
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
   }, [])
 
@@ -52,12 +57,85 @@ export default function NewsStrip({ focusRef, onExpandChange }: Props) {
     )
   }
 
+  const selectedConfig = SOURCE_CONFIG[selectedSource]
+  const selectedData = sources.find((s) => s?.source === selectedSource) ?? null
+  const selectedArticles = selectedData?.articles ?? []
+
   return (
     <div className="px-6 lg:px-10 mb-8">
       <p className="text-xs font-semibold text-white/35 uppercase tracking-widest mb-3">
         Latest from the Labs
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+
+      <div className="sm:hidden">
+        <div className="grid grid-cols-3 gap-1 rounded-lg border border-white/10 bg-white/[0.04] p-1">
+          {SOURCES.map((source) => {
+            const cfg = SOURCE_CONFIG[source]
+            const isSelected = selectedSource === source
+
+            return (
+              <button
+                key={source}
+                type="button"
+                onClick={() => setSelectedSource(source)}
+                className="min-h-9 rounded-md px-2 text-[11px] font-semibold transition-colors"
+                style={{
+                  color: isSelected ? cfg.color : 'rgba(255,255,255,0.55)',
+                  background: isSelected ? `${cfg.color}1f` : 'transparent',
+                  border: `1px solid ${isSelected ? `${cfg.color}66` : 'transparent'}`,
+                }}
+              >
+                {cfg.label}
+              </button>
+            )
+          })}
+        </div>
+
+        <div
+          className="mt-3 overflow-hidden rounded-lg border bg-white/[0.04]"
+          style={{
+            borderColor: 'rgba(255,255,255,0.08)',
+            borderLeftColor: selectedConfig.color,
+            borderLeftWidth: '2px',
+          }}
+        >
+          {selectedArticles.length > 0 ? (
+            selectedArticles.map((article, index) => (
+              <a
+                key={`${article.url}-${index}`}
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block px-4 py-3 transition-colors hover:bg-white/[0.05]"
+                style={{
+                  borderTop: index > 0 ? '1px solid rgba(255,255,255,0.06)' : undefined,
+                }}
+              >
+                {index === 0 && (
+                  <span
+                    className="mb-1 block text-[10px] font-semibold uppercase tracking-widest"
+                    style={{ color: selectedConfig.color }}
+                  >
+                    Latest
+                  </span>
+                )}
+                <p className="text-sm leading-snug text-white/75 transition-colors group-hover:text-white">
+                  {article.title}
+                </p>
+                <p className="mt-1 text-xs text-white/30">
+                  {new Date(article.date).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  })}
+                </p>
+              </a>
+            ))
+          ) : (
+            <p className="px-4 py-3 text-sm text-white/30">No recent news</p>
+          )}
+        </div>
+      </div>
+
+      <div className="hidden sm:grid grid-cols-3 gap-3 items-start">
         {SOURCES.map((source) => {
           const cfg      = SOURCE_CONFIG[source]
           const data     = sources.find((s) => s?.source === source) ?? null

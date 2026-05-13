@@ -28,6 +28,13 @@ const LOGO_CONFIGS = [
   { src: '/logos/gemini.webp', baseX:  0.4, baseY: -2.0, z:  0.8, scale: 2.4, phase: (Math.PI * 2) / 3 },
   { src: '/logos/codex.webp',  baseX:  5.6, baseY:  1.0, z: -1.5, scale: 1.8, phase: (Math.PI * 4) / 3 },
 ]
+
+const MOBILE_LOGO_CONFIGS = [
+  { baseX: -1.7, baseY:  2.4, scale: 1.15 },
+  { baseX:  1.45, baseY: 0.55, scale: 1.22 },
+  { baseX: -0.9, baseY: -2.05, scale: 1.05 },
+]
+
 type LogoSprite = THREE.Sprite & { _baseX: number; _baseY: number; _phase: number }
 
 function lerp(from: number, to: number, amount: number): number {
@@ -119,6 +126,7 @@ export default function AnimatedBackground({ focusRef }: Props) {
     const scene  = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100)
     camera.position.set(0, 0, 9)
+    const isMobileRef = { current: window.innerWidth < 640 }
 
     // ── Two ribbons, each a 3-stop gradient ──────────────────────────────────
     // gradientT tracks each line's position (0=orange, 0.5=blue, 1=green)
@@ -194,6 +202,7 @@ export default function AnimatedBackground({ focusRef }: Props) {
     })
 
     const onResize = () => {
+      isMobileRef.current = window.innerWidth < 640
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
@@ -206,9 +215,9 @@ export default function AnimatedBackground({ focusRef }: Props) {
       animId = requestAnimationFrame(animate)
       const t = reduceMotion ? 0 : ts * 0.001
       const scrollProgress  = clamp01(scrollRef.current / 520)
-      const focusedIdx      = focusRef.current
+      const focusedIdx      = isMobileRef.current ? null : focusRef.current
       const backgroundFocus = lerp(0.6, 0.2, scrollProgress)
-      const logoFocus       = lerp(0.22, 0.07, scrollProgress)
+      const logoFocus       = isMobileRef.current ? lerp(0.11, 0.05, scrollProgress) : lerp(0.22, 0.07, scrollProgress)
       const dotFocus        = lerp(0.6, 0.25, scrollProgress)
 
       ribbons.forEach((lines, ri) => {
@@ -260,16 +269,24 @@ export default function AnimatedBackground({ focusRef }: Props) {
 
       sprites.forEach((sp, i) => {
         let targetOpacity: number
-        if (focusedIdx === null) {
+        if (isMobileRef.current) {
+          targetOpacity = logoFocus
+        } else if (focusedIdx === null) {
           targetOpacity = logoFocus
         } else if (i === focusedIdx) {
           targetOpacity = 0.55
         } else {
           targetOpacity = 0.04
         }
+        const mobileCfg = MOBILE_LOGO_CONFIGS[i]
+        const baseX = isMobileRef.current ? mobileCfg.baseX : sp._baseX
+        const baseY = isMobileRef.current ? mobileCfg.baseY : sp._baseY
+        const targetScale = isMobileRef.current ? mobileCfg.scale : LOGO_CONFIGS[i].scale
         sp.material.opacity += (targetOpacity - sp.material.opacity) * 0.05
-        sp.position.x = sp._baseX + Math.sin(t * 0.16 + sp._phase) * 0.7
-        sp.position.y = sp._baseY + Math.cos(t * 0.11 + sp._phase) * 0.45 - scrollProgress * 0.5
+        sp.position.x = baseX + Math.sin(t * 0.16 + sp._phase) * (isMobileRef.current ? 0.22 : 0.7)
+        sp.position.y = baseY + Math.cos(t * 0.11 + sp._phase) * (isMobileRef.current ? 0.18 : 0.45) - scrollProgress * 0.5
+        sp.scale.x += (targetScale - sp.scale.x) * 0.05
+        sp.scale.y += (targetScale - sp.scale.y) * 0.05
       })
 
       renderer.render(scene, camera)
