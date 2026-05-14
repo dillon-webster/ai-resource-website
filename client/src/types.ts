@@ -22,3 +22,11 @@ export interface NewsSource {
   source: 'anthropic' | 'openai' | 'google'
   articles: NewsArticle[]
 }
+
+export interface Comment {
+  id: string
+  resourceId: string
+  authorName: string
+  body: string
+  createdAt: string
+}
