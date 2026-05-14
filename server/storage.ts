@@ -42,6 +42,14 @@ export function removeResourceById(
   }
 }
 
+export interface Comment {
+  id: string
+  resourceId: string
+  authorName: string
+  body: string
+  createdAt: string
+}
+
 export function deleteJsonResource(id: string): boolean {
   const existing = readResources()
   const result = removeResourceById(existing, id)

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { Pool } from 'pg'
-import { Resource } from './storage'
+import { Resource, Comment } from './storage'
 
 const DATA_FILE   = path.join(__dirname, 'data', 'resources.json')
 const SCHEMA_FILE = path.join(__dirname, 'db', 'schema.sql')
@@ -108,6 +108,52 @@ async function insertResource(resource: Resource): Promise<Resource> {
     ],
   )
   return mapResourceRow(rows[0])
+}
+
+interface CommentRow {
+  id: string
+  resource_id: string
+  author_name: string
+  body: string
+  created_at: Date | string
+}
+
+export function mapCommentRow(row: CommentRow): Comment {
+  return {
+    id: row.id,
+    resourceId: row.resource_id,
+    authorName: row.author_name,
+    body: row.body,
+    createdAt:
+      row.created_at instanceof Date
+        ? row.created_at.toISOString()
+        : new Date(row.created_at).toISOString(),
+  }
+}
+
+export async function insertComment(comment: Comment): Promise<Comment> {
+  await ensureReady()
+  const { rows } = await pool.query<CommentRow>(
+    `INSERT INTO comments (id, resource_id, author_name, body, created_at)
+     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [comment.id, comment.resourceId, comment.authorName, comment.body, comment.createdAt],
+  )
+  return mapCommentRow(rows[0])
+}
+
+export async function selectComments(resourceId: string): Promise<Comment[]> {
+  await ensureReady()
+  const { rows } = await pool.query<CommentRow>(
+    `SELECT * FROM comments WHERE resource_id = $1 ORDER BY created_at ASC`,
+    [resourceId],
+  )
+  return rows.map(mapCommentRow)
+}
+
+export async function deleteCommentById(id: string): Promise<boolean> {
+  await ensureReady()
+  const result = await pool.query('DELETE FROM comments WHERE id = $1', [id])
+  return (result.rowCount ?? 0) > 0
 }
 
 export async function incrementVoteDb(id: string): Promise<Resource | null> {
