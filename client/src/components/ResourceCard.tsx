@@ -250,6 +250,16 @@ export default function ResourceCard({ resource, index }: Props) {
 
       {commentsOpen && (
         <div className="border-t border-white/[0.08] pt-3 mt-1 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Comments</span>
+            <button
+              onClick={toggleComments}
+              className="text-[10px] text-white/30 hover:text-white/60 transition-colors"
+            >
+              Hide ↑
+            </button>
+          </div>
+
           {!commentsLoaded && (
             <p className="text-xs text-white/30">Loading comments…</p>
           )}
@@ -286,7 +296,9 @@ export default function ResourceCard({ resource, index }: Props) {
             </div>
           )}
 
-          <form onSubmit={(e) => void handlePost(e)} className="flex flex-col gap-2 mt-1">
+          <div className="border-t border-white/[0.06] pt-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-2">Add a comment</p>
+          <form onSubmit={(e) => void handlePost(e)} className="flex flex-col gap-2">
             <input
               type="text"
               value={commentName}
@@ -312,6 +324,7 @@ export default function ResourceCard({ resource, index }: Props) {
               {posting ? 'Posting…' : 'Post'}
             </button>
           </form>
+          </div>
         </div>
       )}
     </article>
