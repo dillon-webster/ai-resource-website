@@ -1,5 +1,5 @@
-import { deleteDbResource, incrementVoteDb, readDbResources, writeDbResource } from './dbStorage'
-import { deleteJsonResource, readResources, writeResources, Resource } from './storage'
+import { deleteDbResource, incrementVoteDb, readDbResources, writeDbResource, insertComment, selectComments, deleteCommentById } from './dbStorage'
+import { deleteJsonResource, readResources, writeResources, Resource, Comment } from './storage'
 
 const useDatabase = Boolean(process.env.DATABASE_URL)
 
@@ -39,4 +39,19 @@ export async function voteResource(id: string): Promise<Resource | null> {
   resource.votes = (resource.votes ?? 0) + 1
   writeResources(resources)
   return resource
+}
+
+export async function listComments(resourceId: string): Promise<Comment[]> {
+  if (!useDatabase) return []
+  return selectComments(resourceId)
+}
+
+export async function saveComment(comment: Comment): Promise<Comment> {
+  if (!useDatabase) throw new Error('Comments require a database connection.')
+  return insertComment(comment)
+}
+
+export async function deleteComment(id: string): Promise<boolean> {
+  if (!useDatabase) return false
+  return deleteCommentById(id)
 }

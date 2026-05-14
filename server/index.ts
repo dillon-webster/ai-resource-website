@@ -4,8 +4,8 @@ import path from 'path'
 import { Request, Response, NextFunction } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import rateLimit from 'express-rate-limit'
-import { Resource } from './storage'
-import { deleteResource, listResources, saveResource, voteResource } from './resourceStore'
+import { Resource, Comment } from './storage'
+import { deleteResource, listResources, saveResource, voteResource, listComments, saveComment, deleteComment } from './resourceStore'
 import { getNews } from './newsCache'
 import { getAdminToken } from './adminAuth'
 
@@ -37,6 +37,14 @@ const voteLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many votes. Please try again later.' },
+})
+
+const commentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many comments. Please try again later.' },
 })
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
@@ -100,6 +108,57 @@ app.post('/api/resources/:id/vote', voteLimiter, async (req, res) => {
     return res.json({ votes: resource.votes })
   } catch {
     return res.status(500).json({ error: 'Failed to record vote.' })
+  }
+})
+
+app.get('/api/resources/:id/comments', async (req, res) => {
+  try {
+    const comments = await listComments(req.params.id)
+    res.json(comments)
+  } catch {
+    res.status(500).json({ error: 'Failed to load comments.' })
+  }
+})
+
+app.post('/api/resources/:id/comments', commentLimiter, async (req, res) => {
+  const { authorName, body } = req.body as { authorName?: unknown; body?: unknown }
+
+  if (!authorName || typeof authorName !== 'string' || authorName.trim() === '') {
+    return res.status(400).json({ error: 'First name is required.' })
+  }
+  if (authorName.trim().length > 50) {
+    return res.status(400).json({ error: 'First name must be 50 characters or fewer.' })
+  }
+  if (!body || typeof body !== 'string' || body.trim() === '') {
+    return res.status(400).json({ error: 'Message is required.' })
+  }
+  if (body.trim().length > 1000) {
+    return res.status(400).json({ error: 'Message must be 1000 characters or fewer.' })
+  }
+
+  const comment: Comment = {
+    id: uuidv4(),
+    resourceId: req.params.id,
+    authorName: authorName.trim(),
+    body: body.trim(),
+    createdAt: new Date().toISOString(),
+  }
+
+  try {
+    const saved = await saveComment(comment)
+    return res.status(201).json(saved)
+  } catch {
+    return res.status(500).json({ error: 'Failed to save comment.' })
+  }
+})
+
+app.delete('/api/admin/comments/:id', adminLimiter, requireAdmin, async (req, res) => {
+  try {
+    const deleted = await deleteComment(req.params.id)
+    if (!deleted) return res.status(404).json({ error: 'Comment not found.' })
+    return res.status(204).send()
+  } catch {
+    return res.status(500).json({ error: 'Failed to delete comment.' })
   }
 })
 
