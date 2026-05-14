@@ -55,6 +55,10 @@ export default function ResourceCard({ resource, index }: Props) {
   const isNew = Date.now() - new Date(resource.createdAt).getTime() < NEW_THRESHOLD_MS
 
   useEffect(() => {
+    void fetchComments()
+  }, [])
+
+  useEffect(() => {
     const card = cardRef.current
     if (!card) return
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
