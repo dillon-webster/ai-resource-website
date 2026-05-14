@@ -6,8 +6,8 @@ const SOURCE_CONFIG: Record<
   { label: string; color: string; logoIndex: number }
 > = {
   anthropic: { label: 'Anthropic', color: '#ff6b35', logoIndex: 0 },
-  google:    { label: 'Google AI', color: '#4361ee', logoIndex: 1 },
-  openai:    { label: 'OpenAI',    color: '#10b981', logoIndex: 2 },
+  google:    { label: 'Google AI', color: '#EA4335', logoIndex: 1 },
+  openai:    { label: 'OpenAI',    color: '#4F76F6', logoIndex: 2 },
 }
 
 const SOURCES: NewsSource['source'][] = ['anthropic', 'google', 'openai']
