@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Resource } from '../types'
 import { parseGithubRepo } from '../utils/parseGithubUrl'
 
-const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Paper', 'Claude Code Plugin', 'Codex Plugin', 'Gemini Plugin', 'Other']
+const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Claude Code Plugin', 'Codex Plugin', 'Gemini Plugin', 'Other']
 const PLUGIN_CATEGORIES = new Set(['Claude Code Plugin', 'Codex Plugin', 'Gemini Plugin'])
 
 interface FormState {
@@ -217,7 +217,7 @@ export default function SubmitForm({ onSuccess }: Props) {
           type="text"
           value={form.tags}
           onChange={handleChange('tags')}
-          placeholder="e.g. llm, transformers, paper"
+          placeholder="e.g. llm, transformers, agents"
           className={`${inputBase} bg-white/5`}
         />
       </div>
