@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Resource } from '../types'
 import { parseGithubRepo } from '../utils/parseGithubUrl'
 
-const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Paper', 'Claude Code Plugin', 'Other']
+const CATEGORIES = ['Article', 'Video', 'Tool', 'Tutorial', 'Paper', 'Claude Code Plugin', 'Codex Plugin', 'Gemini Plugin', 'Other']
+const PLUGIN_CATEGORIES = new Set(['Claude Code Plugin', 'Codex Plugin', 'Gemini Plugin'])
 
 interface FormState {
   title: string
@@ -65,7 +66,7 @@ export default function SubmitForm({ onSuccess }: Props) {
   }
 
   async function handleUrlBlur() {
-    if (form.category !== 'Claude Code Plugin') return
+    if (!PLUGIN_CATEGORIES.has(form.category)) return
     const parsed = parseGithubRepo(form.url)
     if (!parsed) return
 
@@ -158,7 +159,7 @@ export default function SubmitForm({ onSuccess }: Props) {
 
       <div>
         <label className="block text-sm text-white/70 mb-1.5">
-          {form.category === 'Claude Code Plugin' ? 'GitHub Repo URL' : 'URL'}{' '}
+          {PLUGIN_CATEGORIES.has(form.category) ? 'GitHub Repo URL' : 'URL'}{' '}
           <span className="text-red-400">*</span>
         </label>
         <input
@@ -166,7 +167,7 @@ export default function SubmitForm({ onSuccess }: Props) {
           value={form.url}
           onChange={handleChange('url')}
           onBlur={handleUrlBlur}
-          placeholder={form.category === 'Claude Code Plugin' ? 'https://github.com/owner/repo' : 'https://...'}
+          placeholder={PLUGIN_CATEGORIES.has(form.category) ? 'https://github.com/owner/repo' : 'https://...'}
           className={`${inputBase} bg-white/5`}
         />
         {errors.url && <p className="mt-1 text-xs text-red-400">{errors.url}</p>}
