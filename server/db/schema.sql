@@ -11,3 +11,11 @@ CREATE TABLE IF NOT EXISTS resources (
   github_repo text,
   votes integer NOT NULL DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS comments (
+  id uuid PRIMARY KEY,
+  resource_id uuid NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
+  author_name text NOT NULL,
+  body text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
