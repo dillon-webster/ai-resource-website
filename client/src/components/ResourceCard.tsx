@@ -6,6 +6,28 @@ const NEW_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000
 const COMMENTER_NAME_KEY = 'ai-resource-commenter-name'
 const ADMIN_TOKEN_KEY = 'ai-resource-admin-token'
 
+const TAG_COLORS: { keywords: string[]; color: string; bg: string; border: string }[] = [
+  {
+    keywords: ['anthropic', 'claude'],
+    color: 'text-[#ff6b35]/90', bg: 'bg-[#ff6b35]/10', border: 'border-[#ff6b35]/30',
+  },
+  {
+    keywords: ['openai', 'chatgpt', 'gpt'],
+    color: 'text-[#4F76F6]/90', bg: 'bg-[#4F76F6]/10', border: 'border-[#4F76F6]/30',
+  },
+  {
+    keywords: ['google', 'gemini', 'vertex', 'deepmind'],
+    color: 'text-[#EA4335]/90', bg: 'bg-[#EA4335]/10', border: 'border-[#EA4335]/30',
+  },
+]
+
+function tagStyle(label: string) {
+  const lower = label.toLowerCase()
+  const match = TAG_COLORS.find(({ keywords }) => keywords.some((k) => lower.includes(k)))
+  if (match) return `${match.color} ${match.bg} ${match.border}`
+  return 'text-white/50 bg-white/5 border-white/10'
+}
+
 interface Props {
   resource: Resource
   index: number
@@ -200,14 +222,14 @@ export default function ResourceCard({ resource, index }: Props) {
       {(resource.category || (resource.tags && resource.tags.length > 0)) && (
         <div className="flex flex-wrap gap-1.5">
           {resource.category && (
-            <span className="text-xs px-2 py-0.5 rounded-full font-medium text-white/80 bg-[#4F76F6]/20 border border-[#4F76F6]/30">
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${tagStyle(resource.category)}`}>
               {resource.category}
             </span>
           )}
           {resource.tags?.map((tag) => (
             <span
               key={tag}
-              className="text-xs px-2 py-0.5 rounded-full text-white/50 bg-white/5 border border-white/10"
+              className={`text-xs px-2 py-0.5 rounded-full border ${tagStyle(tag)}`}
             >
               {tag}
             </span>
