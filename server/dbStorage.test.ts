@@ -15,6 +15,7 @@ describe('mapResourceRow', () => {
       created_at: new Date('2026-05-12T14:00:00.000Z'),
       stars: null,
       github_repo: null,
+      votes: 0,
     })
 
     assert.deepEqual(result, {
@@ -26,6 +27,7 @@ describe('mapResourceRow', () => {
       tags: ['transformers', 'attention'],
       submitterName: 'Prof. Martinez',
       createdAt: '2026-05-12T14:00:00.000Z',
+      votes: 0,
     })
   })
 })
