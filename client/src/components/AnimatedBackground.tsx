@@ -5,12 +5,12 @@ const RIBBON_PTS       = 220
 const LINES_PER_RIBBON = 7
 const LINE_SPREAD      = 0.26
 
-// Brand colors: Anthropic · Google · OpenAI
-const C_ORANGE = new THREE.Color('#ff6b35')
-const C_BLUE   = new THREE.Color('#4361ee')
-const C_GREEN  = new THREE.Color('#10b981')
+// Brand colors: Anthropic · Google AI · OpenAI
+const C_ANTHROPIC = new THREE.Color('#ff6b35')
+const C_GOOGLE    = new THREE.Color('#EA4335')
+const C_OPENAI    = new THREE.Color('#4F76F6')
 
-// focusedIdx → gradient t position (0=orange, 0.5=blue, 1=green)
+// focusedIdx → gradient t position (0=Anthropic, 0.5=Google AI, 1=OpenAI)
 const FOCUS_T = [0, 0.5, 1]
 
 function threeStopColor(t: number, a: THREE.Color, b: THREE.Color, c: THREE.Color): THREE.Color {
@@ -129,7 +129,7 @@ export default function AnimatedBackground({ focusRef }: Props) {
     const isMobileRef = { current: window.innerWidth < 640 }
 
     // ── Two ribbons, each a 3-stop gradient ──────────────────────────────────
-    // gradientT tracks each line's position (0=orange, 0.5=blue, 1=green)
+    // gradientT tracks each line's position (0=Anthropic, 0.5=Google AI, 1=OpenAI)
     // so hover focus can selectively brighten/dim by color zone
     type RibbonLine = {
       mat: THREE.LineBasicMaterial
@@ -143,8 +143,8 @@ export default function AnimatedBackground({ focusRef }: Props) {
       for (let i = 0; i < LINES_PER_RIBBON; i++) {
         const gradientT = i / (LINES_PER_RIBBON - 1)
         const colour = ri === 0
-          ? threeStopColor(gradientT, C_ORANGE, C_BLUE, C_GREEN)
-          : threeStopColor(gradientT, C_GREEN,  C_BLUE, C_ORANGE)
+          ? threeStopColor(gradientT, C_ANTHROPIC, C_GOOGLE, C_OPENAI)
+          : threeStopColor(gradientT, C_OPENAI, C_GOOGLE, C_ANTHROPIC)
         const opacity = ribbonOpacity(i, LINES_PER_RIBBON)
         const centre  = (LINES_PER_RIBBON - 1) / 2
         const yOff    = (i - centre) * LINE_SPREAD
