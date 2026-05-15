@@ -12,7 +12,7 @@ const TAG_COLORS: { keywords: string[]; color: string; bg: string; border: strin
     color: 'text-[#ff6b35]/90', bg: 'bg-[#ff6b35]/10', border: 'border-[#ff6b35]/30',
   },
   {
-    keywords: ['openai', 'chatgpt', 'gpt'],
+    keywords: ['openai', 'chatgpt', 'gpt', 'codex'],
     color: 'text-[#4F76F6]/90', bg: 'bg-[#4F76F6]/10', border: 'border-[#4F76F6]/30',
   },
   {
