@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { Resource, Comment } from '../types'
 
 const VOTED_KEY = 'ai-resource-voted-ids'
@@ -216,7 +217,17 @@ export default function ResourceCard({ resource, index }: Props) {
       </div>
 
       {resource.description && (
-        <p className="text-sm text-white/55 leading-relaxed">{resource.description}</p>
+        <div className="text-sm text-white/55 leading-relaxed
+          [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white/80 [&_h1]:mb-1 [&_h1]:mt-2
+          [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:text-white/70 [&_h2]:mb-1 [&_h2]:mt-2
+          [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-white/65 [&_h3]:mb-0.5 [&_h3]:mt-1.5
+          [&_strong]:text-white/80 [&_em]:text-white/60
+          [&_a]:text-[#4F76F6]/80 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-[#77F2A1]
+          [&_code]:text-[#77F2A1]/80 [&_code]:bg-white/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
+          [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mt-0.5
+          [&_p]:mb-1.5 last:[&_p]:mb-0">
+          <ReactMarkdown>{resource.description}</ReactMarkdown>
+        </div>
       )}
 
       {(resource.category || (resource.tags && resource.tags.length > 0)) && (
