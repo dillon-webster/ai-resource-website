@@ -11,6 +11,12 @@ export interface NewsSource {
   articles: NewsArticle[]
 }
 
+export interface EcosystemArticle extends NewsArticle {
+  source: string
+  sourceLabel: string
+  sourceColor: string
+}
+
 const FEEDS: Array<{ source: NewsSource['source']; url: string }> = [
   { source: 'anthropic', url: 'https://www.anthropic.com/news' },
   { source: 'openai',    url: 'https://openai.com/news/rss.xml' },
@@ -111,6 +117,64 @@ function decodeHtml(value: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
+}
+
+const ECOSYSTEM_FEEDS: Array<{ source: string; label: string; color: string; url: string }> = [
+  { source: 'theverge',    label: 'The Verge',      color: '#e45c10', url: 'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml' },
+  { source: 'techcrunch',  label: 'TechCrunch',     color: '#0d9e6e', url: 'https://techcrunch.com/category/artificial-intelligence/feed/' },
+  { source: 'venturebeat', label: 'VentureBeat',    color: '#228be6', url: 'https://venturebeat.com/ai/feed/' },
+  { source: 'huggingface', label: 'Hugging Face',   color: '#f97316', url: 'https://huggingface.co/blog/feed.xml' },
+  { source: 'wired',       label: 'Wired',          color: '#a855f7', url: 'https://www.wired.com/feed/tag/ai/latest/rss' },
+]
+
+const ECOSYSTEM_MAX = 5
+const ECOSYSTEM_CACHE_TTL_MS = 30 * 60 * 1000
+
+interface EcosystemCache {
+  items: EcosystemArticle[]
+  fetchedAt: number
+}
+
+let ecosystemCache: EcosystemCache | null = null
+
+async function fetchEcosystemSource(
+  feed: (typeof ECOSYSTEM_FEEDS)[number]
+): Promise<EcosystemArticle[]> {
+  try {
+    const res = await fetch(feed.url, { signal: AbortSignal.timeout(8000) })
+    if (!res.ok) return []
+    const text = await res.text()
+    const parser = new XMLParser()
+    const parsed = parser.parse(text)
+    const channel = parsed?.rss?.channel
+    if (!channel) return []
+    const rawItems = channel.item
+    const items = Array.isArray(rawItems) ? rawItems : rawItems ? [rawItems] : []
+    return items.slice(0, ECOSYSTEM_MAX).map((item: Record<string, unknown>) => ({
+      title:       String(item.title ?? '').trim(),
+      url:         String(item.link ?? '').trim(),
+      date:        String(item.pubDate ?? '').trim(),
+      source:      feed.source,
+      sourceLabel: feed.label,
+      sourceColor: feed.color,
+    }))
+  } catch {
+    return []
+  }
+}
+
+export async function getEcosystemNews(): Promise<EcosystemArticle[]> {
+  const now = Date.now()
+  if (ecosystemCache && now - ecosystemCache.fetchedAt < ECOSYSTEM_CACHE_TTL_MS) {
+    return ecosystemCache.items
+  }
+  const results = await Promise.all(ECOSYSTEM_FEEDS.map(fetchEcosystemSource))
+  const items = results
+    .flat()
+    .filter((a) => a.title && a.url)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  ecosystemCache = { items, fetchedAt: now }
+  return items
 }
 
 export async function getNews(): Promise<(NewsSource | null)[]> {

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import rateLimit from 'express-rate-limit'
 import { Resource, Comment } from './storage'
 import { deleteResource, listResources, saveResource, voteResource, listComments, saveComment, deleteComment } from './resourceStore'
-import { getNews } from './newsCache'
+import { getNews, getEcosystemNews } from './newsCache'
 import { getAdminToken } from './adminAuth'
 
 const app = express()
@@ -180,6 +180,15 @@ app.get('/api/news', async (_req, res) => {
     res.json(items)
   } catch {
     res.status(500).json({ error: 'Failed to fetch news.' })
+  }
+})
+
+app.get('/api/news/ecosystem', async (_req, res) => {
+  try {
+    const items = await getEcosystemNews()
+    res.json(items)
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch ecosystem news.' })
   }
 })
 

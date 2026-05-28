@@ -23,6 +23,15 @@ export interface NewsSource {
   articles: NewsArticle[]
 }
 
+export interface EcosystemArticle {
+  title: string
+  url: string
+  date: string
+  source: string
+  sourceLabel: string
+  sourceColor: string
+}
+
 export interface Comment {
   id: string
   resourceId: string

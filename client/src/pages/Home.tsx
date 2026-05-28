@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AnimatedBackground from '../components/AnimatedBackground'
 import NewsStrip from '../components/NewsStrip'
+import EcosystemFeed from '../components/EcosystemFeed'
 import ResourceCard from '../components/ResourceCard'
 import { Resource } from '../types'
 
@@ -66,8 +67,9 @@ export default function Home() {
         </div>
 
         <NewsStrip focusRef={focusRef} onExpandChange={setNewsExpanded} />
+        <EcosystemFeed />
 
-        {loading && <p className="text-center text-white/35 text-sm px-6">Loading resources...</p>}
+        {loading &&<p className="text-center text-white/35 text-sm px-6">Loading resources...</p>}
         {error   && <p className="text-center text-red-400 text-sm px-6">{error}</p>}
 
         {!loading && !error && resources.length === 0 && (
